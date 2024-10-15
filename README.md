@@ -1,4 +1,4 @@
-# sketch_oct15a.ino
+# sketch_oct15a.ino 
 ## 硬件設置
 
 - 使用了3個LED燈，分別連接到引腳4、5和0
