@@ -1,49 +1,70 @@
-# sketch_oct15a.ino  解析
-## 硬件設置
 
-- 使用了3個LED燈，分別連接到引腳4、5和0
-- 兩個按鈕，一個連接到引腳16，另一個連接到引腳2
-- 所有按鈕都使用內部上拉電阻
+# sketch_oct15a.ino 解析
+## Arduino LED控制程序介紹
 
-## 主要功能
+這段程式碼實現了一個Arduino LED控制系統，通過兩個按鈕來控制三個LED的不同亮燈模式。
 
-1. 通過按鈕控制LED燈的點亮順序
-2. 提供兩種操作模式：手動和自動
+### 硬件設置
 
-## 代碼結構
+- 三個LED連接到引腳4、5和0
+- 兩個按鈕分別連接到引腳16和2
+- 使用內部上拉電阻，按鈕按下時為低電平
 
 ### 全局變量
 
 ```cpp
-const int button2Pin = 14;  // 第二個按鈕的引腳
+const int button2Pin = 14;  // 第二個按鈕引腳
 bool p16 = digitalRead(16);  // 存儲引腳16的狀態
 bool flag = LOW;  // 防止按鈕重複觸發的標誌
 int led_sequence = 0;  // LED序列計數器
 ```
 
-### setup() 函數
+### 初始化函數 (setup)
 
-此函數在程序開始時執行一次，用於初始化：
+```cpp
+void setup() {
+  Serial.begin(9600);  // 初始化串口通信
+  pinMode(16, INPUT_PULLUP);  // 設置按鈕1引腳
+  pinMode(2, INPUT_PULLUP);   // 設置按鈕2引腳
+  pinMode(4, OUTPUT);  // 設置LED引腳
+  pinMode(5, OUTPUT);
+  pinMode(0, OUTPUT);
+  digitalWrite(4, LOW);  // 初始化LED為關閉狀態
+  digitalWrite(5, LOW);
+  digitalWrite(0, LOW);
+}
+```
 
-- 設置串口通信（波特率9600）
-- 配置引腳模式（輸入或輸出）
-- 初始化LED狀態（全部關閉）
+### 主循環函數 (loop)
 
-### loop() 函數
-
-這是主循環，持續執行以下操作：
+主循環函數執行以下操作：
 
 1. 讀取兩個按鈕的狀態
-2. 通過串口輸出引腳16的狀態
+2. 通過串口輸出按鈕1的狀態
 3. 根據按鈕狀態控制LED：
-   - 如果第二個按鈕被按下，自動循環LED狀態
-   - 如果第一個按鈕被按下，手動改變LED狀態
+   - 如果按鈕2被按下，自動循環LED狀態
+   - 如果按鈕1被按下，手動改變LED狀態
+4. 使用標誌位防止按鈕1重複觸發
 
-### changeLEDState() 函數
+### LED狀態切換函數 (changeLEDState)
 
-這個函數負責改變LED的點亮狀態：
+這個函數負責改變LED的亮燈模式：
 
 1. 首先關閉所有LED
-2. 根據`led_sequence`變量的值，設置特定的LED點亮模式
-3. 增加`led_sequence`計數，如果超過7則重置為0
+2. 根據`led_sequence`變量設置不同的LED組合
+3. `led_sequence`範圍為0-7，對應8種不同的LED狀態
+4. 每次調用後`led_sequence`增加1，超過7後重置為0
 
+### LED狀態組合
+
+1. 只亮引腳0的LED
+2. 只亮引腳5的LED
+3. 同時亮引腳5和0的LED
+4. 只亮引腳4的LED
+5. 同時亮引腳4和0的LED
+6. 同時亮引腳4和5的LED
+7. 同時亮三個LED
+8. 全部LED關閉
+
+
+這個程序展示了如何使用Arduino控制多個LED，並通過不同的按鈕輸入實現複雜的控制邏輯。它可以作為基礎，進一步擴展為更複雜的LED控制系統或其他互動項目。
